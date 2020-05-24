@@ -29,6 +29,10 @@ steps:
     - apk --no-cache add ansible
     - packer build -var-file variables.json packer.json
 
+trigger:
+  branch:
+  - master
+  
 volumes:
     - name: cache
       temp: {}
