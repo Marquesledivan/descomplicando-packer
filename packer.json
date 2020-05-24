@@ -1,59 +1,79 @@
-{
-    "variables": {
-      "name": null,
-      "region": "us-east-1",
-      "type": "{{env `TYPE`}}"
-    },
+  {
+  "variables": {
+    "name": null,
+    "region": "us-east-1",
+    "type": "{{env `TYPE`}}"
 
-    "sensitive-variables": ["type"],
+  },
 
-    "builders": [
-      {
-        "type": "amazon-ebs",
-        "region": "{{user `region`}}",
-        "source_ami_filter": {
-            "filters": {
-              "virtualization-type": "hvm",
-              "name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
-              "root-device-type": "ebs"
-            },
-            "owners": ["099720109477"],
-            "most_recent": true
+  "sensitive-variables": ["name"],
+
+  "builders": [
+    { 
+      "type": "amazon-ebs",
+      "region": "{{user `region`}}",
+      "source_ami_filter": {
+          "filters": {
+            "virtualization-type": "hvm",
+            "name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
+            "root-device-type": "ebs"
           },
-        "instance_type": "t2.micro",
-        "ssh_username": "ubuntu",
-        "ami_name": "{{user `name`}} {{user `type`}} {{timestamp}}",
-        "ami_description": "from {{.SourceAMI}}",
-        "tags": {
-          "OS_Version": "Ubuntu",
-          "Release": "Latest",
-          "Base_AMI_Name": "{{ .SourceAMIName }}",
-          "Extra": "{{ .SourceAMITags.TagName }}"
-        }
-      }
-    ],
-    "provisioners": [
-      {
-        "type": "ansible",
-        "playbook_file": "./playbook.yml",
-        "galaxy_file": "./requirements.yml",
-        "user": "ubuntu",
-        "extra_arguments": [
-          "--extra-vars",
-          "ansible_python_interpreter=/usr/bin/python3"
-        ],
-        "ansible_env_vars": [
-          "ANSIBLE_HOST_KEY_CHECKING=False"
-        ]
-      }
-    ],
-    "post-processors": [
-      {
-        "type": "compress",
-        "output": "archive.zip"
+          "owners": ["099720109477"],
+          "most_recent": true
+        },
+      "instance_type": "t2.micro",
+      "vpc_id": "vpc-03b2d5af66c219b75",
+      "subnet_id": "subnet-0ef7063765462c2af",
+      "ssh_username": "ubuntu",
+      "ami_name": "{{user `name`}} {{user `type`}} {{timestamp}}",
+      "ami_description": "from {{.SourceAMI}}",
+      "tags": {
+        "Name"       : "Teste Packer",
+        "Ambiente"   :  "LAB",
+        "Plataforma" :  "EC2",
+        "Equipe"     :  "Cloud",
+        "BU"         :  "CVCCorp",
+        "Componente" :  "EC2"
       },
-      {
-        "type": "manifest"
+      "run_tags": {
+        "Name"       : "Teste Packer" ,
+        "Ambiente"   :  "LAB",
+        "Plataforma" :  "EC2",
+        "Equipe"     :  "Cloud",
+        "BU"         :  "CVCCorp",
+        "Componente" :  "EC2"
+      },
+      "run_volume_tags": {
+        "Ambiente"   : "LAB",
+        "BU"         : "CVCCorp",
+        "Componente" : "EC2",
+        "Equipe"     : "Cloud",
+        "Name"       : "Teste Packer",
+        "Plataforma" : "EC2"
       }
-    ]
-  }
+    }
+  ],
+  "provisioners": [
+      {
+       "type": "ansible",
+       "playbook_file": "./install_K8s/main.yml",
+       "user": "ubuntu",
+       "extra_arguments":[
+         "--extra-vars",
+         "ansible_python_interpreter=/usr/bin/python3"
+       ],
+       "ansible_env_vars":[
+         "ANSIBLE_HOST_KEY_CHECKING=False"
+       ]
+      }
+    ],
+  "post-processors": [
+    {
+      "type": "compress",
+      "output": "archive.zip"
+    },
+    {
+      "type": "manifest"
+    }
+  ]
+}
