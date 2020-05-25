@@ -4,4 +4,4 @@
   roles:
     - role: nginxinc.nginx
   vars:
-    nginx_sitename: gomex.me
+    nginx_sitename: ledivan.io
