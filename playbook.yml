@@ -1,8 +1,7 @@
----
-    - name: Instalando o K8s
-      hosts: 'all'
-      become: yes
-      become_method: sudo
-      tasks:
-      - name: Instalando o Docker
-        shell: curl -fsSL https://get.docker.com | bash -
+- hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - role: nginxinc.nginx
+  vars:
+    nginx_sitename: gomex.me
